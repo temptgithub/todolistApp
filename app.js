@@ -41,12 +41,13 @@ let todoSchema = new Schema({
 	status: String,
 	list: String
 });
-// model tells where to save it in mongoose
-let todoModel = new mongoose.model("notes", todoSchema);
+// model is keyword tells where to save it in mongoose  -- a class to make a new object notes- collection of documents  schema with properties
+let todoModel = new mongoose.model("notes", todoSchema); // notes is the name of the collection, todoSchema is the Schema modelled off of the mongoose schema
+
 //post handler for creating notes  CREATE
 app.post("/createNote", (request, response) => {
 	console.log(` request sends the following: ${request.body}`); // 2 see only the body message note if you dont specify .body it shows the entire object which is the packet itself
-// object for database
+// mongodb object for database w/ the class above
 	let newNote = todoModel({
 		username: request.body.username,   // value input into POSTMAN
 		title: request.body.title,
@@ -56,7 +57,7 @@ app.post("/createNote", (request, response) => {
 		status: request.body.status,
 		list: null
 	});
-// save note to mongodb
+// save note object to mongodb
 	newNote.save((error) => {
 		if (error) {
 			console.log("There was an issue with Mongoose", error);  // respond to front end if fail
@@ -69,9 +70,11 @@ app.post("/createNote", (request, response) => {
 		}
 	});
 });
-// R - READ   from CRUD for reading notes from the DB and sending to frontend
+
+// read handler - listener
+// R - READ  find  from CRUD for reading notes from the DB and sending to frontend
 app.post("/readNotes", (request, response) => {
-		todoModel.find({}, (error, results) => {
+		todoModel.find({}, (error, results) => { // find method is error first and results second, but error and results can be renamed by other variable names... but order does matter
 			if (error) {
 				console.log(`something happened with mongoose ${error}`);
 				response.sendStatus(500);
@@ -85,26 +88,55 @@ app.post("/readNotes", (request, response) => {
 		});
 
 });
-// D -DELETE FROM CRUD - deleting a note from the database
+// post handler for deletein g a note from the database
+// D findByIdAndDelete -DELETE FROM CRUD - deleting a note from the database
 app.post("/deleteNote", (request, response) => {
-	//searches the mongodb by an id and delte
+	//searches the mongodb by an id and then respectively delete that object
 //	let objectToDelete = {id: request.body._id 	};
 		let objectToDelete = request.body._id	;
 //	notes[3]._id;
-// searches the mongodb by an id and deltes this value
-	todoModel.findByIdAndDelete(objectToDelete, (error, results) => {
+// searches the mongodb by an id and deletes this value
+	todoModel.findByIdAndDelete(objectToDelete, (error, results) => { // results is the object based on the id -  returning the document that was deleted
 		if (error) {
 			console.log("something happened with mongoose",error);
 			response.sendStatus(500);
 		} else {
 			// otherwise send to front end the item we deleted
-			response.send({deleted: results});
+			response.send({deleted: results});  // results here is object that is just deleted
 	//		console.log(`The ${results} item in the database was delete!`);
 		}
 
 	});
 
 });
+
+
+// post handler
+		app.post("/updateNote", (request, response) => {  // post frontend
+
+				let propertiesToUpdate = {
+					username: request.body.username,
+					title: request.body.title,
+					description: request.body.description,
+					priority: request.body.priority,
+					dueDate: request.body.dueDate,
+					status: request.body.status,
+					list: null
+				};
+
+				todoModel.findByIdAndUpdate(request.body._id, propertiesToUpdate, (error, results) => {   // backend
+
+						if (error) {
+							console.log(`something happened with mongoos ${error}`);
+							response.sendStatus(500);
+						} else {
+								response.send({updated: results});  //results copy of object before the updated
+						}
+
+				});
+
+		});
+
 
 /*
 // Model lets us create a new database with the name messages and only allows the messageSchema types in this database.
