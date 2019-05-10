@@ -124,10 +124,10 @@ app.post("/deleteNote", (request, response) => {
 					list: null
 				};
 
-				todoModel.findByIdAndUpdate(request.body._id, propertiesToUpdate, (error, results) => {   // backend
+				todoModel.findOneAndReplace(request.body._id, propertiesToUpdate, (error, results) => {   // backend
 
 						if (error) {
-							console.log(`something happened with mongoos ${error}`);
+							console.log(`something happened with mongoose ${error}`);
 							response.sendStatus(500);
 						} else {
 								response.send({updated: results});  //results copy of object before the updated
