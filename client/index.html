@@ -1,0 +1,78 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title> frontend App</title>
+
+<!--  <link rel="stylesheet" href="styles/styles.css?v=1.0"> -->
+  <script src="jquery-3.3.1.min.js"></script>
+
+</head>
+
+<body>
+
+<div id="container">
+	<h1>Title</h1>
+	<button id="createNote">Create New Note</button>
+	<div id="list">
+		<ul>
+		</ul>
+	</div>
+</div>
+
+  <script>
+  	$(document).ready(() => {
+      $("#createNote").click(function () {
+        console.log('Hey there!')
+        window.location = '/editnote.html';
+      });
+
+  		$.post("/readNotes", {}, (response) => {
+
+  			console.log(response);
+
+  			let notesArray = response.notes;
+
+  			for (let i = 0;  i < notesArray.length; i++) {
+
+  				let currentNote = notesArray[i];
+
+  				let listItem = `<li data-id="${currentNote._id}">
+  									${currentNote.title},
+  									${currentNote.description},
+  									${currentNote.dueDate},
+                    <a href="/editnote.html?id=${currentNote._id}">Edit</a>
+
+  									<button class="removeButton">Delete</button>
+  								</li>`;
+
+  				$("#list ul").append(listItem);
+
+  			}
+
+  			$(".removeButton").click(function () {
+
+  					let idToDelete = {_id: $(this).parent().attr("data-id")};
+
+  					$.post("http://localhost:3000/deleteNote", idToDelete, (response) => {
+  						console.log(response);
+  						if (response != 500) {
+  							$(this).parent().remove();
+  						}
+
+  					});
+
+  				});
+
+
+
+
+
+  		});
+
+  	});
+  </script>
+</body>
+</html>
