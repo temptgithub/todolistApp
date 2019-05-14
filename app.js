@@ -6,6 +6,7 @@ const app = express();
 const http = require("http").Server(app);  // connect http server with express server
 // Connection to the MongoDB for todoApp with userid and pwd
 const dbConnect = "mongodb+srv://todoAppuser:todoAppusertt@cluster0-gbm50.mongodb.net/test?retryWrites=true";
+//const dbConnect = "mongodb+srv://todoAppuser:todoAppusertt@cluster0-gbm50.mongodb.net/test?retryWrites=true";
 mongoose.connect(dbConnect,{useNewUrlParser: true }, (error) => {
 	if (error) {
 		console.log("There was an error connecting with MongoDB", error);
@@ -22,6 +23,7 @@ db.on('error', console.error.bind(console, "MongoDB connection error: "));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
 app.use("/", express.static("./client"));  // reference to client folder
+//app.use("/client", express.static("./client"));
 
 const port = 3000;
 http.listen(port);
@@ -46,9 +48,9 @@ let todoModel = new mongoose.model("notes", todoSchema); // notes is the name of
 
 //post handler for creating notes  CREATE
 app.post("/createNote", (request, response) => {
-	console.log(` request sends the following: ${request.body}`); // 2 see only the body message note if you dont specify .body it shows the entire object which is the packet itself
+	//console.log(` request sends the following: ${request.body}`); // 2 see only the body message note if you dont specify .body it shows the entire object which is the packet itself
 // mongodb object for database w/ the class above
-	let newNote = todoModel({
+	let newNote = new todoModel({
 		username: request.body.username,   // value input into POSTMAN
 		title: request.body.title,
 		description: request.body.description,
