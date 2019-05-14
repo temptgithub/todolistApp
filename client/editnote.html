@@ -1,0 +1,176 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>My App Front sending</title>
+  <meta name="description" content="first app">
+
+  <script src="jquery-3.3.1.min.js"></script>
+  <!--<script
+    src="https://code.jquery.com/jquery-3.4.0.min.js"
+    integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg="
+    crossorigin="anonymous"></script> -->
+	<!--<link href="style.css" rel="stylesheet" type="text/css" /> -->
+
+<style>
+</style>
+
+<!-- <link rel ="stylesheet" href=style >  </link> -->
+</head>
+
+<body style="background-color:white">
+
+<h2>My Frontend APP !<h2>
+<p> Title</p>
+  <input type="text" id="title"/>
+  <p> Description </p>
+  <input type="text" id="description"/>
+  <p> Priority </p>
+    <input type="text" id="priority"/>
+  <p>Due Date </p>
+      <input type="text" id="due-date"/>
+
+<button id="create-note">Create Note</button>
+
+  <script>
+    $(document).ready(function() {
+// searches url for id value
+      const searchParams = new URLSearchParams(window.location.search);
+// object.method exists for searchParams object  has = method
+      if (searchParams.has('id')) {
+           $("#create-note").html("saved changes");
+
+//          console.log("go into Editnote");
+          $.post("http://localhost:3000/readNotes", {}, (response) => {
+            let notesArray = response.notes;
+            let matchedNote;
+
+              for (let i=0;i<notesArray.length;i++) {
+                  if ( notesArray[i]._id ===  searchParams.get("id") ) {
+                      matchedNote = notesArray[i];
+                      break;  // if id matches or loop ends, stop loop
+                  }
+              }
+            $("#title").val(matchedNote.title);
+            $("#description").val(matchedNote.description);
+            $("#priority").val(matchedNote.priority);
+            $("#due-date").val(matchedNote.dueDate); // note spelling to distinguish
+
+            $("#create-note").click(function() {
+                 let updatedNote = {
+                   		username: null,
+                   		title:        $("#title").val() ,
+                   		description:  $("#description").val() ,
+                   		priority:     $("#priority").val() ,
+                   		dueDate:      $("#due-date").val(),
+                   		status: true
+               	};
+
+
+              $.post("http://localhost:3000/updateNote", updatedNote, () => {
+
+                  $("body").append("<p> your note was save</p>");
+              });
+
+            });
+
+          });
+
+      } else {
+          console.log("save changes and update note");
+          $("#create-note").click(function() {
+                let newNote =  {
+                		username: null,
+                		title:        $("#title").val() ,
+                		description:  $("#description").val() ,
+                		priority:     $("#priority").val() ,
+                		dueDate:      $("#due-date").val(),
+                		status: true
+
+              	};
+
+            console.log("clicked");
+             // use jquery to do POST
+               $.post("http://localhost:3000/createNote", newNote, (response) =>{
+                 // runs when server responds
+                 $("body").append("<p>your note was saved</p>");
+
+               });
+
+          });
+
+      }
+
+
+});
+
+
+</script>
+<br>
+
+
+<!--
+<button id="request-button"> Press to send Post request<button>
+
+
+
+
+
+
+
+
+<br>
+<br><br>
+<br>
+<p></p>
+
+
+
+
+  <p>Type in the City: </p>
+  <input id = "city" type = "text" />
+  <button id="submit">Submit</button>
+
+  <div id="container"> </div>
+
+  <script>
+
+      "use strict";
+      $(document).ready(function() {
+
+        $("#submit").click(function() {
+          console.log("clicked");
+
+          let searchCity = $("#city").val();
+
+          let data = searchCity;
+        //  API CALL , callback a function after the get is completed
+            $.get(" http://api.openweathermap.org/data/2.5/weather?q=" + searchCity + "&APPID=f6574ca4f05d6e81ea7038c6ac91c03e",
+                function(data){
+                  console.log(data);
+                  console.log(data.weather[0].description); //specifics
+                  let sentence = " <p> the weather in " + data.name + " is " + data.weather[0].description + "</p>" ;
+                  //console.log{` The weather in denver is ${dw} `}
+
+                  $("#container").html(sentence);
+
+                }).fail(function (data) {
+
+                  //console.log("there was an error!");
+                  let cit = data.name;
+                //old  $("#container").html(`<p id='error'> <h1 style = 'color: red;'> SORRY, we could not find the CITY! ${cit} </h1> </p>`);
+                  $("#container").html(`<p id='error'> <h1 style = 'color: red;'> SORRY, we could not find the CITY!  </h1> </p>`);
+
+                });
+        });
+
+      });
+
+  </script>
+-->
+
+<!-- script  at  end  -->
+</body>
+</html>
